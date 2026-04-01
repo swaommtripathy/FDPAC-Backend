@@ -6,7 +6,7 @@
   },
   "variable": [
     { "key": "base_url", "value": "http://localhost:3000" },
-    { "key": "admin_token", "value": "" },
+    { "key": "admin_token", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Y2Q1YTAyZTAzZjAzN2I1MzRhMzQxOCIsImlhdCI6MTc3NTA2NjgyMiwiZXhwIjoxNzc1NjcxNjIyfQ.FITCm-CDSnqg74-X0AkpjdBhND4bqYepjpAideA7yVA" },
     { "key": "analyst_token", "value": "" },
     { "key": "viewer_token", "value": "" }
   ],
