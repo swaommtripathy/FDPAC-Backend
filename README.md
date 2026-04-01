@@ -21,7 +21,6 @@ A production-grade Node.js + Express + MongoDB backend for a finance dashboard s
 
 ## Project Structure
 
-```
 finance-backend/
 ├── src/
 │   ├── config/
@@ -116,7 +115,7 @@ Server runs at: `http://localhost:3000`
 
 ### Base URL
 ```
-http://localhost:5000/api
+http://localhost:3000/api
 ```
 
 All protected routes require the header:
