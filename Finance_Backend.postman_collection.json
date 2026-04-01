@@ -1,0 +1,248 @@
+{
+  "info": {
+    "name": "Finance Backend API",
+    "description": "Finance Data Processing and Access Control Backend — Postman Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000" },
+    { "key": "admin_token", "value": "" },
+    { "key": "analyst_token", "value": "" },
+    { "key": "viewer_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"test123\",\n  \"role\": \"viewer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["const res = pm.response.json();", "pm.collectionVariables.set('admin_token', res.data.token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@finance.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as Analyst",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["const res = pm.response.json();", "pm.collectionVariables.set('analyst_token', res.data.token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"analyst@finance.com\",\n  \"password\": \"analyst123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as Viewer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["const res = pm.response.json();", "pm.collectionVariables.set('viewer_token', res.data.token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"viewer@finance.com\",\n  \"password\": \"viewer123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users (Admin Only)",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/users?page=1&limit=10", "host": ["{{base_url}}"], "path": ["api","users"], "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"}] }
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/users/:id/role",
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"analyst\"\n}" }
+          }
+        },
+        {
+          "name": "Toggle User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/users/:id/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Financial Records",
+      "item": [
+        {
+          "name": "Get All Records (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewer_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/records?type=expense&category=food&page=1&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api","records"],
+              "query": [{"key":"type","value":"expense"},{"key":"category","value":"food"},{"key":"page","value":"1"},{"key":"limit","value":"5"}]
+            }
+          }
+        },
+        {
+          "name": "Get Record by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewer_token}}" }],
+            "url": "{{base_url}}/api/records/:id"
+          }
+        },
+        {
+          "name": "Create Record (Analyst)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{analyst_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/records",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000,\n  \"type\": \"income\",\n  \"category\": \"salary\",\n  \"date\": \"2026-04-01\",\n  \"notes\": \"April salary\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Record (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/records/:id",
+            "body": { "mode": "raw", "raw": "{\n  \"amount\": 5500,\n  \"notes\": \"Updated salary record\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Record (Admin, Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/records/:id"
+          }
+        },
+        {
+          "name": "Create Record as Viewer (Should Fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewer_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/records",
+            "body": { "mode": "raw", "raw": "{\n  \"amount\": 100,\n  \"type\": \"expense\",\n  \"category\": \"food\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Summary (All Roles)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewer_token}}" }],
+            "url": "{{base_url}}/api/dashboard/summary"
+          }
+        },
+        {
+          "name": "Get Category Breakdown (Analyst+)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{analyst_token}}" }],
+            "url": "{{base_url}}/api/dashboard/categories"
+          }
+        },
+        {
+          "name": "Get Monthly Trends (Analyst+)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{analyst_token}}" }],
+            "url": { "raw": "{{base_url}}/api/dashboard/trends/monthly?months=6", "host": ["{{base_url}}"], "path": ["api","dashboard","trends","monthly"], "query": [{"key":"months","value":"6"}] }
+          }
+        },
+        {
+          "name": "Get Weekly Trends (Analyst+)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{analyst_token}}" }],
+            "url": { "raw": "{{base_url}}/api/dashboard/trends/weekly?weeks=4", "host": ["{{base_url}}"], "path": ["api","dashboard","trends","weekly"], "query": [{"key":"weeks","value":"4"}] }
+          }
+        },
+        {
+          "name": "Category Breakdown as Viewer (Should Fail 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewer_token}}" }],
+            "url": "{{base_url}}/api/dashboard/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health",
+          "request": { "method": "GET", "url": "{{base_url}}/health" }
+        }
+      ]
+    }
+  ]
+}
